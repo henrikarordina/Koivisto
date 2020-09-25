@@ -54,10 +54,10 @@ TimeManager::TimeManager(int white, int black, int whiteInc, int blackInc, int m
     forceStop    = false;
 
 
-    int division        = 30;
+    int division        = 20;
 
-    timeToUse = board->getActivePlayer() == WHITE ? (int(white / division) + whiteInc) - 10
-                                                  : (int(black / division) + blackInc) - 10;
+    timeToUse = board->getActivePlayer() == WHITE ? (int(white / division) + whiteInc) - 2
+                                                  : (int(black / division) + blackInc) - 2;
     upperTimeBound = timeToUse;
 
     startTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
@@ -95,8 +95,8 @@ void TimeManager::updatePV(Move move, Score score, Depth depth) {
     // compute the safety to stop the search
     if (historyCount > 0){
         if (moveHistory[historyCount-1] == move) {
-            timeToUse=timeToUse*0.93;
-            if (timeToUse<upperTimeBound/2) timeToUse = upperTimeBound;
+            timeToUse=timeToUse*0.9;
+            if (timeToUse<upperTimeBound/3) timeToUse = upperTimeBound;
         } else {
             timeToUse = upperTimeBound;
         }
