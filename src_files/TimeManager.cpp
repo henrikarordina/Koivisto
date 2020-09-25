@@ -53,34 +53,12 @@ TimeManager::TimeManager(int white, int black, int whiteInc, int blackInc, int m
     ignorePV     = false;
     forceStop    = false;
 
-    double phase = (18
-                    - bitCount(board->getPieces()[WHITE_BISHOP] | board->getPieces()[BLACK_BISHOP]
-                               | board->getPieces()[WHITE_KNIGHT] | board->getPieces()[BLACK_KNIGHT]
-                               | board->getPieces()[WHITE_ROOK] | board->getPieces()[BLACK_ROOK])
-                    - 3 * bitCount(board->getPieces()[WHITE_QUEEN] | board->getPieces()[BLACK_QUEEN]))
-                   / 18.0;
 
-    if (phase > 1)
-        phase = 1;
-
-    double division = movesToGo - 30 + 50 * phase;
-    division        = 40;
+    int division        = 25;
 
     timeToUse = board->getActivePlayer() == WHITE ? (int(white / division) + whiteInc) - 10
                                                   : (int(black / division) + blackInc) - 10;
-
-    int difference = board->getActivePlayer() == WHITE ? (white - black) : (black - white);
-    difference     = 0;
-
-    timeToUse += int(difference / division);
-    upperTimeBound = timeToUse * 3;
-
-    if (upperTimeBound > (board->getActivePlayer() == WHITE ? white / 10 : black / 10)) {
-        upperTimeBound = (board->getActivePlayer() == WHITE ? white / 10 : black / 10);
-    }
-
-    if (timeToUse > upperTimeBound)
-        timeToUse = upperTimeBound / 3;
+    upperTimeBound = timeToUse;
 
     startTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 }
@@ -115,8 +93,14 @@ void TimeManager::updatePV(Move move, Score score, Depth depth) {
     depthHistory[historyCount] = depth;
 
     // compute the safety to stop the search
-    if (historyCount > 0)
-        computeSafetyToStop();
+    if (historyCount > 0){
+        if (moveHistory[historyCount-1] == move) {
+            timeToUse=timeToUse*0.95;
+            if (timeToUse<upperTimeBound/2) timeToUse = upperTimeBound;
+        } else {
+            timeToUse = upperTimeBound;
+        }
+    }
 
     historyCount++;
 }
@@ -136,13 +120,13 @@ bool TimeManager::isTimeLeft() {
     if (forceStop && isSafeToStop)
         return false;
 
-    // if we have safe time left, continue searching
-    if (elapsed < timeToUse)
-        return true;
-
     // if we are above the maximum allowed time, stop
     if (elapsed >= upperTimeBound)
         return false;
+
+    // if we have safe time left, continue searching
+    if (elapsed < timeToUse)
+        return true;
 
     // dont stop the search if its not safe
     if (!isSafeToStop)
