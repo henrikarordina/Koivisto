@@ -10,86 +10,89 @@
 #define pst_index_white(s) squareIndex(7 - rankIndex(s), fileIndex(s))
 #define pst_index_black(s) s
 
+#define pawn_pst_index_white(square, wKSide)                                                                           \
+    squareIndex(rankIndex(square), (wKSide ? fileIndex(square) : 7 - fileIndex(square)))
+#define pawn_pst_index_black(square, bKSide)                                                                           \
+    squareIndex(7 - rankIndex(square), (bKSide ? fileIndex(square) : 7 - fileIndex(square)))
+
 float sqrts[28] = {
     0,       1,       1.41421, 1.73205, 2,       2.23607, 2.44949, 2.64575, 2.82843, 3,
     3.16228, 3.31662, 3.4641,  3.60555, 3.74166, 3.87298, 4,       4.12311, 4.24264, 4.3589,
     4.47214, 4.58258, 4.69042, 4.79583, 4.89898, 5,       5.09902, 5.19615,
 };
 
-float passer_rank[16] = {             0,    -18.000015,           -14,           2.3,     18.599987,     23.999985,     16.299986,             0,             0,    0.99999994,    -41.700001,    -16.700014,           -14,    -29.000015,    -31.700001,             0,
+float passer_rank[16] = {
+    0, -18.000015, -14,        2.3,        18.599987, 23.999985,  16.299986,  0,
+    0, 0.99999994, -41.700001, -16.700014, -14,       -29.000015, -31.700001, 0,
 };
 
-float psqt_pawn_endgame[64] = {
-    0,  0,  0,  0,  0,   0,   0,   0,   12,  -1,  3,   6,   9,  -3, -11, -1, 2,  2,  -6, -3, -4, -4,
-    -8, -5, 15, 8,  -3,  -15, -12, -5,  0,   4,   29,  22,  13, -1, -1,  7,  15, 17, 84, 88, 77, 58,
-    51, 55, 73, 75, 172, 163, 144, 132, 135, 131, 150, 163, 0,  0,  0,   0,  0,  0,  0,  0,
+EvalScore psqt_pawn[64] {
+    M(0, 0),    M(0, 0),    M(0, 0),     M(0, 0),     M(0, 0),     M(0, 0),    M(0, 0),     M(0, 0),
+    M(-3, 18),  M(50, -4),  M(36, 9),    M(-11, 3),   M(-13, 15),  M(-30, 3),  M(-4, -14),  M(-23, -7),
+    M(0, 5),    M(20, 5),   M(19, -12),  M(-4, -3),   M(-16, 2),   M(-3, -7),  M(-41, -14), M(-26, -8),
+    M(-22, 24), M(-2, 11),  M(22, -9),   M(24, -18),  M(17, -12),  M(-5, -11), M(-25, 0),   M(-34, 4),
+    M(-14, 41), M(11, 28),  M(30, 4),    M(31, -19),  M(26, -10),  M(8, 1),    M(-12, 18),  M(-18, 20),
+    M(5, 111),  M(74, 109), M(98, 83),   M(84, 49),   M(34, 39),   M(20, 49),  M(0, 82),    M(4, 93),
+    M(36, 247), M(42, 219), M(163, 189), M(127, 163), M(109, 172), M(81, 163), M(143, 214), M(48, 238),
+    M(0, 0),    M(0, 0),    M(0, 0),     M(0, 0),     M(0, 0),     M(0, 0),    M(0, 0),     M(0, 0),
 };
 
-float psqt_pawn[64] = {
-    0,   0,   0,   0,  0,  0,  0,  0,  -21, 38,  39, -2, -13, -30, -7, -20, -12, 11,  7,  8,  -7, -9,
-    -29, -23, -25, -8, 7,  33, 23, -2, -28, -31, -2, 14, 27,  22,  23, -4,  -12, -12, 26, 37, 39, 39,
-    34,  15,  -3,  7,  35, 34, 36, 36, 36,  36,  38, 37, 0,   0,   0,  0,   0,   0,   0,  0,
+EvalScore psqt_knight[64] {
+    M(-243, -48), M(-135, -43), M(-107, -5), M(-107, -31), M(18, -41), M(-220, -15), M(-82, -70), M(-174, -97),
+    M(-136, -21), M(-98, -2),   M(65, -47),  M(-16, 3),    M(-30, -7), M(24, -38),   M(-49, -19), M(-96, -48),
+    M(-96, -27),  M(22, -28),   M(-14, 7),   M(17, 0),     M(66, -24), M(104, -26),  M(20, -29),  M(0, -54),
+    M(-31, -16),  M(-14, -7),   M(-31, 21),  M(23, 16),    M(-4, 18),  M(46, 0),     M(-19, 1),   M(5, -26),
+    M(-31, -15),  M(-15, -15),  M(-15, 9),   M(-13, 21),   M(12, 12),  M(0, 6),      M(9, -4),    M(-17, -24),
+    M(-45, -28),  M(-37, -2),   M(-6, -16),  M(-9, 11),    M(7, 1),    M(9, -15),    M(12, -36),  M(-32, -23),
+    M(-32, -40),  M(-64, -21),  M(-28, -12), M(10, -19),   M(9, -11),  M(7, -27),    M(-10, -29), M(-20, -54),
+    M(-144, -2),  M(-10, -47),  M(-59, -23), M(-38, -1),   M(7, -27),  M(-22, -20),  M(-6, -59),  M(-27, -75),
 };
 
-float psqt_knight[64] = {
-    -243, -75, -77, -67, -7,  -190, -72, -134, -196, -173, 115, -21, -30,  29, -39, -131, -141, 52,  -19, 52,  96, 154,
-    60,   5,   -36, -4,  -41, 68,   16,  106,  -14,  20,   -36, -10, -5,   7,  42,  20,   39,   -12, -80, -42, 14, 16,
-    47,   24,  32,  -52, -37, -79,  -28, 40,   39,   37,   -10, -15, -124, 0,  -89, -28,  27,   -37, 4,   -47,
-};
-float psqt_knight_endgame[64] = {
-    -63, -58, -5,  -36, -26, -25, -85, -132, -1,  23,  -52, 8,   -2,  -33, -19, -43, -17, -28, 17,  0,   -19, -26,
-    -34, -54, -11, -2,  31,  11,  23,  -5,   6,   -26, -15, -15, 14,  31,  12,  11,  -4,  -24, -8,  3,   -16, 11,
-    -4,  -20, -36, -13, -40, -11, -7,  -19,  -11, -27, -24, -59, -17, -42, -13, -1,  -32, -10, -49, -70,
-};
-
-float psqt_bishop[64] = {
-    -233, -118, -254, -158, -98, -175, -36, -71,  -332, -132, -210, -219, -27,  100, -51,  -401,
-    -214, -93,  33,   -43,  -43, 71,   50,  -148, -159, -68,  -110, 82,   4,    25,  -79,  -88,
-    -86,  -85,  -22,  -15,  62,  -78,  -58, -59,  -102, 22,   -22,  -9,   -52,  54,  -32,  -69,
-    22,   -11,  30,   -60,  11,  -8,   43,  -44,  -180, 10,   -86,  -116, -107, -59, -150, -198,
+EvalScore psqt_bishop[64] {
+    M(-103, 8),  M(-93, -10), M(-209, 28), M(-143, -8), M(-103, 14), M(-150, 15), M(-106, 18), M(-56, -9),
+    M(-97, 3),   M(-37, 0),   M(-70, 1),   M(-119, 16), M(-32, 12),  M(15, -5),   M(-46, 3),   M(-161, 29),
+    M(-79, 11),  M(-38, 2),   M(-27, 2),   M(-28, -8),  M(-33, 6),   M(-14, 1),   M(-20, 19),  M(-68, 7),
+    M(-54, -4),  M(-43, 3),   M(-35, 10),  M(17, -5),   M(-11, 5),   M(-10, 3),   M(-49, 2),   M(-48, 8),
+    M(-46, -11), M(-35, 0),   M(-27, 8),   M(-15, 7),   M(-3, 5),    M(-43, 12),  M(-33, -1),  M(-29, -2),
+    M(-42, 3),   M(-18, 1),   M(-22, 11),  M(-24, 10),  M(-27, 15),  M(9, -13),   M(-22, 3),   M(-24, -2),
+    M(-23, -3),  M(-21, -14), M(-20, -4),  M(-40, 6),   M(-19, 4),   M(-23, -1),  M(-2, -11),  M(-34, -30),
+    M(-85, -3),  M(-20, 7),   M(-46, 2),   M(-41, 4),   M(-42, 8),   M(-44, 7),   M(-80, 11),  M(-68, -9),
 };
 
-float psqt_bishop_endgame[64] = {
-    -62, -25, -52, -28, -21, -30, -7,  -49, 3,  -15, 6,   -44, 2,  0,  -17, -21, 11,  12, -23, -18, -14, 11,
-    4,   17,  -4,  28,  50,  5,   25,  13,  -3, -7,  -11, 10,  38, 87, -30, 32,  -21, 13, 8,   -9,  86,  55,
-    135, 17,  28,  23,  -18, -19, -19, 31,  44, 14,  9,   -35, 2,  27, 27,  44,  43,  7,  41,  11,
+EvalScore psqt_rook[64] {
+    M(20, 20),  M(19, 14),  M(8, 24),   M(24, 17), M(45, 25),  M(12, 21), M(12, 21),  M(12, 15),
+    M(29, 29),  M(34, 29),  M(64, 24),  M(58, 25), M(44, 11),  M(68, 20), M(36, 30),  M(24, 20),
+    M(-3, 15),  M(27, 16),  M(21, 15),  M(36, 21), M(5, 16),   M(38, 13), M(56, 9),   M(-4, -3),
+    M(-11, 17), M(-11, 10), M(25, 24),  M(21, 8),  M(20, 15),  M(47, 15), M(-15, 9),  M(-6, 6),
+    M(-23, 14), M(-13, 16), M(3, 18),   M(-2, 13), M(8, 3),    M(-3, 7),  M(2, 5),    M(-17, -7),
+    M(-37, 10), M(-13, 7),  M(-17, -1), M(-20, 7), M(-10, -4), M(1, -3),  M(-3, -2),  M(-34, -11),
+    M(-33, 6),  M(-17, -1), M(-20, 9),  M(-1, 10), M(3, -5),   M(8, -5),  M(-21, -4), M(-64, 8),
+    M(-10, -4), M(0, 8),    M(9, -1),   M(12, 5),  M(17, -3),  M(14, -2), M(-26, 6),  M(-11, -25),
 };
 
-float psqt_rook[64] = {
-    -5, 4,  -17, 9,   5,   -3,  -3,  -8, -16, -6, 19,  18,  29,  28, -9, -1,  -13, 7,  1,   6,   -10, 13,
-    26, 6,  -31, -11, 0,   6,   5,   12, -10, -1, -33, -18, -12, -7, 3,  -13, 2,   -2, -42, -13, -7,  -15,
-    -5, -4, -8,  -19, -38, -12, -20, -1, 8,   8,  -16, -59, -10, -5, 4,  12,  12,  9,  -21, 9,
+EvalScore psqt_queen[64] {
+    M(-50, 0),  M(-61, 49),  M(-42, 24),  M(-81, 27), M(45, -40),  M(17, -19), M(-8, -4),  M(32, 0),
+    M(-51, 9),  M(-71, 24),  M(-46, 24),  M(-32, 15), M(-111, 61), M(23, -25), M(-9, 10),  M(24, 0),
+    M(-33, 15), M(-33, 6),   M(6, -40),   M(-54, 36), M(-10, 16),  M(8, -12),  M(6, -6),   M(6, -13),
+    M(-61, 57), M(-46, 30),  M(-40, 4),   M(-44, 13), M(-10, 0),   M(-13, 0),  M(-25, 44), M(-16, 26),
+    M(-18, 9),  M(-58, 46),  M(-12, -12), M(-17, 18), M(-7, -2),   M(-3, -3),  M(-3, 25),  M(-2, 8),
+    M(-37, 30), M(2, -38),   M(-17, 4),   M(-5, -18), M(-5, -9),   M(6, 2),    M(17, 13),  M(6, 24),
+    M(-48, 21), M(-12, -16), M(5, -21),   M(9, -25),  M(23, -25),  M(18, -25), M(-1, -44), M(6, -27),
+    M(-15, 11), M(-10, -12), M(-11, 4),   M(2, 5),    M(-8, 17),   M(-31, 13), M(-31, -4), M(-56, -25),
 };
 
-float psqt_rook_endgame[64] = {
-    20, 14, 24, 17,  25, 21, 21, 15, 29, 29, 24, 25, 11, 20, 30, 20, 15, 16, 15, 21,  16, 13,
-    9,  2,  17, 10,  24, 8,  15, 15, 9,  6,  14, 16, 18, 13, 3,  7,  5,  -7, 10, 7,   -1, 7,
-    1,  -3, 3,  -11, 6,  4,  9,  10, -5, 0,  1,  8,  1,  8,  4,  0,  -3, -2, 6,  -25,
+EvalScore psqt_king[64] {
+    M(-96, -104), M(12, -48), M(117, -48), M(-12, -32), M(-58, -11), M(0, 4),     M(48, -12), M(17, -28),
+    M(72, -33),   M(61, 0),   M(24, 10),   M(128, -6),  M(17, 8),    M(0, 35),    M(-6, 14),  M(-120, 25),
+    M(24, -10),   M(80, 0),   M(48, 11),   M(-24, 18),  M(63, 2),    M(81, 30),   M(120, 20), M(-17, -1),
+    M(0, -28),    M(12, 6),   M(-24, 24),  M(-2, 25),   M(-8, 20),   M(-17, 28),  M(0, 12),   M(-71, -2),
+    M(-61, -23),  M(24, -18), M(-32, 23),  M(-74, 37),  M(-79, 38),  M(-47, 24),  M(-30, 2),  M(-83, -11),
+    M(-4, -31),   M(8, -9),   M(-15, 15),  M(-43, 29),  M(-51, 33),  M(-17, 21),  M(10, 2),   M(-37, -12),
+    M(16, -49),   M(23, -19), M(-9, 10),   M(-43, 20),  M(-37, 20),  M(-17, 7),   M(31, -15), M(33, -39),
+    M(-17, -79),  M(40, -55), M(21, -32),  M(-55, -5),  M(-5, -25),  M(-29, -11), M(47, -46), M(33, -79),
 };
 
-float psqt_queen[64] = {
-    -5, 4,  -17, 9,   5,   -3,  -3,  -8, -16, -6, 19,  18,  29,  28, -9, -1,  -13, 7,  1,   6,   -10, 13,
-    26, 6,  -31, -11, 0,   6,   5,   12, -10, -1, -33, -18, -12, -7, 3,  -13, 2,   -2, -42, -13, -7,  -15,
-    -5, -4, -8,  -19, -38, -12, -20, -1, 8,   8,  -16, -59, -10, -5, 4,  12,  12,  9,  -21, 9,
-};
-
-float psqt_queen_endgame[64] = {
-    20, 14, 24, 17,  25, 21, 21, 15, 29, 29, 24, 25, 11, 20, 30, 20, 15, 16, 15, 21,  16, 13,
-    9,  2,  17, 10,  24, 8,  15, 15, 9,  6,  14, 16, 18, 13, 3,  7,  5,  -7, 10, 7,   -1, 7,
-    1,  -3, 3,  -11, 6,  4,  9,  10, -5, 0,  1,  8,  1,  8,  4,  0,  -3, -2, 6,  -25,
-
-};
-
-float psqt_king[64] = {
-    -46, -8,  -3,  -42, -43, -15, -12, -3,  -3,  -14, -1,  -22, -23, 0,   -1,  -10, 9,   0,   -7, -39, -32, -9,
-    0,   -17, -15, -18, -34, -37, -48, -32, -10, -46, -41, -31, -42, -69, -64, -47, -15, -28, -9, -7,  -30, -43,
-    -41, -22, 0,   -17, 26,  28,  -9,  -23, -22, -12, 21,  18,  28,  30,  1,   5,   5,   1,   32, 33,
-};
-float psqt_king_endgame[64] = {
-    -59, -13, 7,   -22, -11, -16, -17, -68, -8, 10,  30,  29,  28,  30,  19,  -20, -10, 30,  51,  33,  27, 50,
-    30,  -11, -18, 16,  34,  35,  40,  38,  17, -22, -33, -3,  28,  42,  38,  29,  -8,  -36, -26, 6,   20, 34,
-    33,  21,  2,   -27, -44, -24, 10,  15,  15, 7,   -20, -39, -84, -45, -32, -40, -40, -31, -46, -84,
-};
+EvalScore* psqt[6] {psqt_pawn, psqt_knight, psqt_bishop, psqt_rook, psqt_queen, psqt_king};
 
 #ifdef TUNE_PST
 float* tunablePST_MG_grad = new float[64] {};
@@ -97,11 +100,23 @@ float* tunablePST_EG_grad = new float[64] {};
 #endif
 
 float* _pieceValuesEarly = new float[unusedVariable] {
-     90.211487,     69.899239,     6.2228494,      2.967576,    -9.1678696,     8.7445889,    -4.0076895,    -11.351655,     14.176047,     463.04376,     47.557571,     26.782915,     22.808609,     473.91107,     31.915777,     24.075211,     41.845776,    -5.8912878,     13.943347,     574.08636,     101.79205,     22.015999,     61.792591,     17.496267,     12.106392,     1350.0123,     49.171928,     8.0235796,     378.32214,     253.04475,    -51.211845,     10.589941,    -6.3968649,     6.3443727,     19.223135,    -13.720773,    0.25771901,    -40.303791,    -41.210938,    -35.532829,    -19.787298,    -68.714424,     9.4156246,     -62.58881,    -14.393072,    -10.375373,    -183.67802,    -316.65826,     -12.65072,    -7.1560545,    -18.819189,    -10.803145,    -12.076631,    -10.146332,     11.989947,    -6.6928525,     4.9275126,             0,             0,             0,
+    90.211487,  69.899239,  6.2228494,  2.967576,   -9.1678696, 8.7445889,  -4.0076895, -11.351655, 14.176047,
+    463.04376,  47.557571,  26.782915,  22.808609,  473.91107,  31.915777,  24.075211,  41.845776,  -5.8912878,
+    13.943347,  574.08636,  101.79205,  22.015999,  61.792591,  17.496267,  12.106392,  1350.0123,  49.171928,
+    8.0235796,  378.32214,  253.04475,  -51.211845, 10.589941,  -6.3968649, 6.3443727,  19.223135,  -13.720773,
+    0.25771901, -40.303791, -41.210938, -35.532829, -19.787298, -68.714424, 9.4156246,  -62.58881,  -14.393072,
+    -10.375373, -183.67802, -316.65826, -12.65072,  -7.1560545, -18.819189, -10.803145, -12.076631, -10.146332,
+    11.989947,  -6.6928525, 4.9275126,  0,          0,          0,
 };
 
 float* _pieceValuesLate = new float[unusedVariable] {
-     104.82733,     130.21487,     11.598015,     41.836597,    -7.8446722,    -4.1840973,    -15.864173,    0.44860947,    -6.6336184,     327.79779,     81.411537,     16.900436,     17.016239,     287.31894,     8.0259972,     30.608137,     51.638828,     5.4482141,     18.636389,     590.33789,     100.65056,      27.68157,    -17.710117,     1.9092197,     6.6818852,     1121.1086,     27.764854,       57.6642,    -129.18095,     41.508553,     52.540432,     1.0327644,    -1.8575548,    -28.430937,    -38.164093,     24.079365,     30.723057,    -144.93318,     -50.13253,    -11.376001,    -8.0586424,    -61.548996,    -81.147713,    -381.26257,    -7.7224793,    -74.114044,    -515.90515,    -630.17755,    -16.433153,     2.7820337,    -2.0064692,    -7.3157744,    -5.1838088,    -8.3675108,    -3.3051472,    -11.926251,     16.130898,             0,             0,             0,
+    104.82733,  130.21487,  11.598015,  41.836597,  -7.8446722, -4.1840973, -15.864173, 0.44860947, -6.6336184,
+    327.79779,  81.411537,  16.900436,  17.016239,  287.31894,  8.0259972,  30.608137,  51.638828,  5.4482141,
+    18.636389,  590.33789,  100.65056,  27.68157,   -17.710117, 1.9092197,  6.6818852,  1121.1086,  27.764854,
+    57.6642,    -129.18095, 41.508553,  52.540432,  1.0327644,  -1.8575548, -28.430937, -38.164093, 24.079365,
+    30.723057,  -144.93318, -50.13253,  -11.376001, -8.0586424, -61.548996, -81.147713, -381.26257, -7.7224793,
+    -74.114044, -515.90515, -630.17755, -16.433153, 2.7820337,  -2.0064692, -7.3157744, -5.1838088, -8.3675108,
+    -3.3051472, -11.926251, 16.130898,  0,          0,          0,
 };
 
 float* phaseValues = new float[6] {
@@ -226,6 +241,8 @@ bb::Score Evaluator::evaluate(Board* b) {
     }
 #endif
 
+    EvalScore pstSum = M(0, 0);
+
     memset(features, 0, unusedVariable * sizeof(float));
 
     U64 whiteTeam = b->getTeamOccupied()[WHITE];
@@ -271,8 +288,8 @@ bb::Score Evaluator::evaluate(Board* b) {
     float lateWeightScalar  = (phase);
     
     //the pst are multiples of 100
-    float earlyPSTScalar = earlyWeightScalar / 100;
-    float latePSTScalar  = lateWeightScalar / 100;
+    float earlyPSTScalar = earlyWeightScalar;
+    float latePSTScalar  = lateWeightScalar;
     
     
     int whitekingSafety_attackingPiecesCount = 0;
@@ -315,9 +332,8 @@ bb::Score Evaluator::evaluate(Board* b) {
     while (k) {
         square = bitscanForward(k);
     
-        features[INDEX_PAWN_PSQT] += psqt_pawn[squareIndex(rankIndex(square), (wKSide ? fileIndex(square) : 7 - fileIndex(square)))] * earlyPSTScalar;
-        features[INDEX_PAWN_PSQT] += psqt_pawn_endgame[square] * latePSTScalar;
-        
+        pstSum += psqt_pawn[pawn_pst_index_white(square, wKSide)];
+ 
         if (getBit(whitePassers,square)) features[INDEX_PASSER_RANK] += passer_rank[getBit(whiteBlockedPawns,square)*8+rankIndex(square)]/10;
 
         k = lsbReset(k);
@@ -327,10 +343,8 @@ bb::Score Evaluator::evaluate(Board* b) {
     while (k) {
         square = bitscanForward(k);
     
-        features[INDEX_PAWN_PSQT] -=
-                psqt_pawn[squareIndex(7 - rankIndex(square), (bKSide ? fileIndex(square) : 7 - fileIndex(square)))] * earlyPSTScalar;
-        features[INDEX_PAWN_PSQT] -=
-                psqt_pawn_endgame[squareIndex(7 - rankIndex(square), fileIndex(square))] * latePSTScalar;
+        pstSum -= psqt_pawn[pawn_pst_index_black(square, bKSide)];
+
         
         if (getBit(blackPassers,square)) features[INDEX_PASSER_RANK] -= passer_rank[getBit(blackBlockedPawns,square)*8+7-rankIndex(square)]/10;
 
@@ -395,9 +409,10 @@ bb::Score Evaluator::evaluate(Board* b) {
         square  = bitscanForward(k);
         attacks = KNIGHT_ATTACKS[square];
     
-    
-        features[INDEX_KNIGHT_PSQT] += psqt_knight[pst_index_white(square)] * earlyPSTScalar;
-        features[INDEX_KNIGHT_PSQT] += psqt_knight_endgame[pst_index_white(square)] * latePSTScalar;
+        pstSum += psqt_knight[pst_index_white(square)];
+
+//        res += psqt_knight[pst_index_white(square)] * earlyPSTScalar;
+//        res += psqt_knight_endgame[pst_index_white(square)] * latePSTScalar;
     
     
         features[INDEX_KNIGHT_MOBILITY] += sqrts[bitCount(KNIGHT_ATTACKS[square] & mobilitySquaresWhite)];
@@ -418,8 +433,9 @@ bb::Score Evaluator::evaluate(Board* b) {
         attacks = KNIGHT_ATTACKS[square];
     
     
-        features[INDEX_KNIGHT_PSQT] -= psqt_knight[pst_index_black(square)] * earlyPSTScalar;
-        features[INDEX_KNIGHT_PSQT] -= psqt_knight_endgame[pst_index_black(square)] * latePSTScalar;;
+        pstSum -= psqt_knight[pst_index_black(square)];
+//        res -= psqt_knight[pst_index_black(square)] * earlyPSTScalar;
+//        res -= psqt_knight_endgame[pst_index_black(square)] * latePSTScalar;;
     
     
         features[INDEX_KNIGHT_MOBILITY] -= sqrts[bitCount(attacks & mobilitySquaresBlack)];
@@ -447,9 +463,12 @@ bb::Score Evaluator::evaluate(Board* b) {
         tunablePST_EG_grad[pst_index_white(square)] += _pieceValuesLate [INDEX_BISHOP_PSQT] * phase     / 100;
 #endif
     
-        features[INDEX_BISHOP_PSQT] += psqt_bishop[pst_index_white(square)] * earlyPSTScalar;
-        features[INDEX_BISHOP_PSQT] += psqt_bishop_endgame[pst_index_white(square)] * (phase) / 100.0;
+//        res += psqt_bishop[pst_index_white(square)] * earlyPSTScalar;
+//        res += psqt_bishop_endgame[pst_index_white(square)] * (phase) / 100.0;
     
+        pstSum += psqt_bishop[pst_index_white(square)];
+
+
         features[INDEX_BISHOP_MOBILITY] += sqrts[bitCount(attacks & mobilitySquaresWhite)];
         features[INDEX_BISHOP_PAWN_SAME_SQUARE] += bitCount(
                 blackPawns & (((ONE << square) & WHITE_SQUARES) ? WHITE_SQUARES : BLACK_SQUARES));
@@ -483,9 +502,10 @@ bb::Score Evaluator::evaluate(Board* b) {
         tunablePST_MG_grad[pst_index_black(square)] -= _pieceValuesEarly[INDEX_BISHOP_PSQT] * (1-phase) / 100;
         tunablePST_EG_grad[pst_index_black(square)] -= _pieceValuesLate [INDEX_BISHOP_PSQT] * phase     / 100;
 #endif
-    
-        features[INDEX_BISHOP_PSQT] -= psqt_bishop[pst_index_black(square)] * earlyPSTScalar;
-        features[INDEX_BISHOP_PSQT] -= psqt_bishop_endgame[pst_index_black(square)] * latePSTScalar;
+        pstSum -= psqt_bishop[pst_index_black(square)];
+
+//        res -= psqt_bishop[pst_index_black(square)] * earlyPSTScalar;
+//        res -= psqt_bishop_endgame[pst_index_black(square)] * latePSTScalar;
     
         features[INDEX_BISHOP_MOBILITY] -= sqrts[bitCount(attacks & mobilitySquaresBlack)];
         features[INDEX_BISHOP_PAWN_SAME_SQUARE] -= bitCount(
@@ -521,9 +541,10 @@ bb::Score Evaluator::evaluate(Board* b) {
         attacks = lookUpRookAttack(square, occupied);
     
     
-        features[INDEX_ROOK_PSQT] += psqt_rook[pst_index_white(square)] * earlyPSTScalar;
-        features[INDEX_ROOK_PSQT] += psqt_rook_endgame[pst_index_white(square)] * (phase) / 100.0;
+//        res += psqt_rook[pst_index_white(square)] * earlyPSTScalar;
+//        res += psqt_rook_endgame[pst_index_white(square)] * (phase) / 100.0;
     
+        pstSum += psqt_rook[pst_index_white(square)];
     
         features[INDEX_ROOK_MOBILITY] += sqrts[bitCount(attacks & mobilitySquaresWhite)];
         
@@ -553,9 +574,10 @@ bb::Score Evaluator::evaluate(Board* b) {
         square  = bitscanForward(k);
         attacks = lookUpRookAttack(square, occupied);
     
-    
-        features[INDEX_ROOK_PSQT] -= psqt_rook[pst_index_black(square)] * earlyPSTScalar;
-        features[INDEX_ROOK_PSQT] -= psqt_rook_endgame[pst_index_black(square)] * (phase) / 100.0;
+        pstSum -= psqt_rook[pst_index_black(square)];
+
+//        res -= psqt_rook[pst_index_black(square)] * earlyPSTScalar;
+//        res -= psqt_rook_endgame[pst_index_black(square)] * (phase) / 100.0;
     
         features[INDEX_ROOK_MOBILITY] -= sqrts[bitCount(attacks & mobilitySquaresBlack)];
         
@@ -593,8 +615,9 @@ bb::Score Evaluator::evaluate(Board* b) {
         attacks = lookUpRookAttack(square, occupied) | lookUpBishopAttack(square, occupied);
     
     
-        features[INDEX_QUEEN_PSQT] += psqt_queen[pst_index_white(square)] * earlyPSTScalar;
-        features[INDEX_QUEEN_PSQT] += psqt_queen_endgame[pst_index_white(square)] * latePSTScalar;
+        pstSum += psqt_queen[pst_index_white(square)];
+//        res += psqt_queen[pst_index_white(square)] * earlyPSTScalar;
+//        res += psqt_queen_endgame[pst_index_white(square)] * latePSTScalar;
     
     
         features[INDEX_QUEEN_MOBILITY] += sqrts[bitCount(attacks & mobilitySquaresWhite)];
@@ -611,9 +634,10 @@ bb::Score Evaluator::evaluate(Board* b) {
         square  = bitscanForward(k);
         attacks = lookUpRookAttack(square, occupied) | lookUpBishopAttack(square, occupied);
     
-    
-        features[INDEX_QUEEN_PSQT] -= psqt_queen[pst_index_black(square)] * earlyPSTScalar;
-        features[INDEX_QUEEN_PSQT] -= psqt_queen_endgame[pst_index_black(square)] * latePSTScalar;
+        pstSum -= psqt_queen[pst_index_black(square)];
+
+//        res -= psqt_queen[pst_index_black(square)] * earlyPSTScalar;
+//        res -= psqt_queen_endgame[pst_index_black(square)] * latePSTScalar;
     
     
         features[INDEX_QUEEN_MOBILITY] -= sqrts[bitCount(attacks & mobilitySquaresBlack)];
@@ -635,8 +659,9 @@ bb::Score Evaluator::evaluate(Board* b) {
     while (k) {
         square = bitscanForward(k);
     
-        features[INDEX_KING_PSQT] += psqt_king[63 - square] * earlyPSTScalar;
-        features[INDEX_KING_PSQT] += psqt_king_endgame[63 - square] * latePSTScalar;
+        pstSum += psqt_king[pst_index_white(square)];
+//        res += psqt_king[pst_index_white(square)] * earlyPSTScalar;
+//        res += psqt_king_endgame[pst_index_white(square)] * latePSTScalar;
     
         features[INDEX_KING_PAWN_SHIELD] += bitCount(KING_ATTACKS[square] & whitePawns);
         features[INDEX_KING_CLOSE_OPPONENT] += bitCount(KING_ATTACKS[square] & blackTeam);
@@ -647,9 +672,11 @@ bb::Score Evaluator::evaluate(Board* b) {
     k = b->getPieces()[BLACK_KING];
     while (k) {
         square = bitscanForward(k);
-    
-        features[INDEX_KING_PSQT] -= psqt_king[square] * earlyPSTScalar;
-        features[INDEX_KING_PSQT] -= psqt_king_endgame[square] * latePSTScalar;
+
+        pstSum -= psqt_king[pst_index_black(square)];
+
+//        res -= psqt_king[pst_index_black(square)] * earlyPSTScalar;
+//        res -= psqt_king_endgame[pst_index_black(square)] * latePSTScalar;
     
         features[INDEX_KING_PAWN_SHIELD] -= bitCount(KING_ATTACKS[square] & blackPawns);
         features[INDEX_KING_CLOSE_OPPONENT] -= bitCount(KING_ATTACKS[square] & whiteTeam);
@@ -692,7 +719,8 @@ bb::Score Evaluator::evaluate(Board* b) {
     const __m128 tL   = _mm_add_ps(lateRes, _mm_movehl_ps(lateRes, lateRes));
     const __m128 sumL = _mm_add_ss(tL, _mm_shuffle_ps(tL, tL, 1));
     
-    res = sumE[0] * (1 - phase) + sumL[0] * (phase);
+    res += phase * EgScore(pstSum) + (1-phase) * MgScore(pstSum);
+    res += sumE[0] * (1 - phase) + sumL[0] * (phase);
     res += (b->getActivePlayer() == WHITE ? 15 : -15);
     return res;
     // clang-format on
@@ -841,12 +869,12 @@ int Evaluator::paramCount() { return unusedVariable; }
 
 float* Evaluator::getPSQT(Piece piece, bool early) {
     switch (piece) {
-        case PAWN: return early ? psqt_pawn : psqt_pawn_endgame;
-        case KNIGHT: return early ? psqt_knight : psqt_knight_endgame;
-        case BISHOP: return early ? psqt_bishop : psqt_bishop_endgame;
-        case ROOK: return early ? psqt_rook : psqt_rook_endgame;
-        case QUEEN: return early ? psqt_queen : psqt_queen_endgame;
-        case KING: return early ? psqt_king : psqt_king_endgame;
+        //        case PAWN: return early ? psqt_pawn : psqt_pawn_endgame;
+        //        case KNIGHT: return early ? psqt_knight : psqt_knight_endgame;
+        //        case BISHOP: return early ? psqt_bishop : psqt_bishop_endgame;
+        //        case ROOK: return early ? psqt_rook : psqt_rook_endgame;
+        //        case QUEEN: return early ? psqt_queen : psqt_queen_endgame;
+        //        case KING: return early ? psqt_king : psqt_king_endgame;
     }
     return nullptr;
 }
@@ -860,3 +888,178 @@ float* Evaluator::getTunablePST_MG_grad() { return tunablePST_MG_grad; }
 
 float* Evaluator::getTunablePST_EG_grad() { return tunablePST_EG_grad; }
 #endif
+
+void Material::reset(Board* b) {
+
+    this->materialSum = M(0, 0);
+
+    bool wKSide = (fileIndex(bitscanForward(b->getPieces()[WHITE_KING])) > 3 ? 0 : 1);
+    bool bKSide = (fileIndex(bitscanForward(b->getPieces()[BLACK_KING])) > 3 ? 0 : 1);
+
+    U64 k = b->getPieces(WHITE, PAWN);
+    for (; k; k = lsbReset(k)) {
+        Square square = bitscanForward(k);
+        this->materialSum +=
+            psqt_pawn[squareIndex(rankIndex(square), (wKSide ? fileIndex(square) : 7 - fileIndex(square)))];
+    }
+    k = b->getPieces(BLACK, PAWN);
+    for (; k; k = lsbReset(k)) {
+        Square square = bitscanForward(k);
+        this->materialSum -=
+            psqt_pawn[squareIndex(7 - rankIndex(square), (bKSide ? fileIndex(square) : 7 - fileIndex(square)))];
+    }
+
+    for (Piece p = KNIGHT; p <= KING; p++) {
+        
+        U64 k = b->getPieces(WHITE, p);
+        for (; k; k = lsbReset(k)) {
+            this->materialSum += psqt[p][pst_index_white(bitscanForward(k))];
+        }
+        k = b->getPieces(BLACK, p);
+        for (; k; k = lsbReset(k)) {
+            this->materialSum -= psqt[p][pst_index_black(bitscanForward(k))];
+        }
+    }
+}
+
+void Material::onMove(Board* b, Move m) {
+
+    Square sqFrom    = getSquareFrom(m);
+    Square sqTo      = getSquareTo(m);
+    Piece  pFrom     = getMovingPiece(m);
+    Piece  pFromPure = pFrom % 6;
+    Type   mType     = getType(m);
+    Color  color     = pFrom / 6;
+    int    factor    = color == WHITE ? 1 : -1;
+
+    bool wKSide = (fileIndex(bitscanForward(b->getPieces()[WHITE_KING])) > 3 ? 0 : 1);
+    bool bKSide = (fileIndex(bitscanForward(b->getPieces()[BLACK_KING])) > 3 ? 0 : 1);
+
+    if (color == WHITE) {
+        if (pFromPure == PAWN) {
+
+            if (isPromotion(m)) {
+
+                this->materialSum -= psqt_pawn[pawn_pst_index_white(sqFrom, wKSide)];
+                this->materialSum += psqt[promotionPiece(m) % 6][pst_index_white(sqTo)];
+
+                if (isCapture(m)) {
+                    // assuming we don't capture other pawns
+                    this->materialSum += psqt[getCapturedPiece(m) % 6][pst_index_black(sqTo)];
+                }
+                return;
+            } else if (mType == EN_PASSANT) {
+
+                this->materialSum -= psqt_pawn[pawn_pst_index_white(sqFrom, wKSide)];
+                this->materialSum += psqt_pawn[pawn_pst_index_white(sqTo, wKSide)];
+
+                this->materialSum += psqt_pawn[pawn_pst_index_black(sqTo - 8 * factor, bKSide)];
+                return;
+            }
+
+            this->materialSum -= psqt_pawn[pawn_pst_index_white(sqFrom, wKSide)];
+            this->materialSum += psqt_pawn[pawn_pst_index_white(sqTo, wKSide)];
+        } else if (pFrom % 6 == KING) {
+            //no matter what type of move the king does, we can always move the piece
+            this->materialSum -= psqt[KING][pst_index_white(sqFrom)];
+            this->materialSum += psqt[KING][pst_index_white(sqTo)];
+    
+            //if the king crosses the half, we need to redo the pawn material
+            if(fileIndex(sqTo) / 4 != fileIndex(sqFrom) / 4){
+                reset(b);
+                return;
+            }
+            
+            //for a castling move, we also need to consider the rook. we can exit early as a promotion cannot be a capture.
+            if (isCastle(m)) {
+                Square rookSquare = sqFrom + (mType == QUEEN_CASTLE ? -4 : 3);
+                Square rookTarget = sqTo + (mType == QUEEN_CASTLE ? 1 : -1);
+
+                this->materialSum -= psqt[ROOK][pst_index_white(rookSquare)];
+                this->materialSum += psqt[ROOK][pst_index_white(rookTarget)];
+
+                // we dont need to consider captures here
+                return;
+            }
+            
+            
+            
+        } else {
+            //doing the initial move for knights, bishops, rooks and queens
+            this->materialSum -= psqt[pFromPure][pst_index_white(sqFrom)];
+            this->materialSum += psqt[pFromPure][pst_index_white(sqTo)];
+        }
+
+        //for normal captures beside e.p. and promotions, remove the taken material.
+        if (isCapture(m)) {
+            if (getCapturedPiece(m) % 6 == PAWN) {
+                this->materialSum += psqt_pawn[pawn_pst_index_black(sqTo, bKSide)];
+            } else {
+                this->materialSum += psqt[getCapturedPiece(m) % 6][pst_index_black(sqTo)];
+            }
+        }
+        
+    } else {
+        if (pFromPure == PAWN) {
+        
+            if (isPromotion(m)) {
+            
+                this->materialSum += psqt_pawn[pawn_pst_index_black(sqFrom, bKSide)];
+                this->materialSum -= psqt[promotionPiece(m) % 6][pst_index_black(sqTo)];
+            
+                if (isCapture(m)) {
+                    // assuming we don't capture other pawns
+                    this->materialSum -= psqt[getCapturedPiece(m) % 6][pst_index_white(sqTo)];
+                }
+                return;
+            } else if (mType == EN_PASSANT) {
+            
+                this->materialSum += psqt_pawn[pawn_pst_index_black(sqFrom, bKSide)];
+                this->materialSum -= psqt_pawn[pawn_pst_index_black(sqTo, bKSide)];
+            
+                this->materialSum -= psqt_pawn[pawn_pst_index_white(sqTo - 8 * factor, wKSide)];
+                return;
+            }
+        
+            this->materialSum += psqt_pawn[pawn_pst_index_black(sqFrom, bKSide)];
+            this->materialSum -= psqt_pawn[pawn_pst_index_black(sqTo, bKSide)];
+        } else if (pFrom % 6 == KING) {
+            //no matter what type of move the king does, we can always move the piece
+            this->materialSum += psqt[KING][pst_index_black(sqFrom)];
+            this->materialSum -= psqt[KING][pst_index_black(sqTo)];
+    
+    
+            if(fileIndex(sqTo) / 4 != fileIndex(sqFrom) / 4){
+                reset(b);
+                return;
+            }
+    
+    
+            //for a castling move, we also need to consider the rook. we can exit early as a promotion cannot be a capture.
+            if (isCastle(m)) {
+                Square rookSquare = sqFrom + (mType == QUEEN_CASTLE ? -4 : 3);
+                Square rookTarget = sqTo + (mType == QUEEN_CASTLE ? 1 : -1);
+            
+                this->materialSum += psqt[ROOK][pst_index_black(rookSquare)];
+                this->materialSum -= psqt[ROOK][pst_index_black(rookTarget)];
+            
+                // we dont need to consider captures here
+                return;
+            }
+            
+        } else {
+            //doing the initial move for knights, bishops, rooks and queens
+            this->materialSum += psqt[pFromPure][pst_index_black(sqFrom)];
+            this->materialSum -= psqt[pFromPure][pst_index_black(sqTo)];
+        }
+    
+        //for normal captures beside e.p. and promotions, remove the taken material.
+        if (isCapture(m)) {
+            if (getCapturedPiece(m) % 6 == PAWN) {
+                this->materialSum -= psqt_pawn[pawn_pst_index_white(sqTo, wKSide)];
+            } else {
+                this->materialSum -= psqt[getCapturedPiece(m) % 6][pst_index_white(sqTo)];
+            }
+        }
+    }
+}

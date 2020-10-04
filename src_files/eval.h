@@ -8,6 +8,24 @@
 #include "Bitboard.h"
 #include "Board.h"
 
+typedef int32_t EvalScore;
+#define M(mg, eg)    ((EvalScore)((unsigned int) (eg) << 16) + (mg))
+#define MgScore(s)   ((Score)((uint16_t)((unsigned) ((s)))))
+#define EgScore(s)   ((Score)((uint16_t)((unsigned) ((s) + 0x8000) >> 16)))
+#define showScore(s) std::cout << "(" << MgScore(s) << ", " << EgScore(s) << ")" << std::endl;
+
+
+
+struct Material{
+
+    EvalScore materialSum;
+    
+    void reset(Board* b);
+    
+    void onMove(Board* b, Move m);
+
+};
+
 static int unusedVariable = 0;
 
 static int INDEX_PAWN_VALUE                = unusedVariable++;
@@ -84,7 +102,7 @@ static int SPACER1 = unusedVariable += unusedVariable % 4 == 0 ? 0 : (4 - unused
 class Evaluator {
     public:
     float* features = new float[unusedVariable];
-
+    
     float phase;
 
     void computePinnedPieces(Board* b);
